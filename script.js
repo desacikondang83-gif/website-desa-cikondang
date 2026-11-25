@@ -1,0 +1,13 @@
+function toggleMenu(){document.getElementById('mainNav').classList.toggle('open')}
+document.getElementById('year').textContent=new Date().getFullYear();
+const defaults={introText:'Pusat informasi desa, pelayanan masyarakat, transparansi, dan dokumentasi kegiatan Pemerintah Desa Cikondang.',aboutTitle:'Mengenal Desa Cikondang',aboutText:'Desa Cikondang berada di Kecamatan Ganeas, Kabupaten Sumedang, Provinsi Jawa Barat. Bagian ini memuat profil, sejarah singkat, visi, misi, serta potensi desa.',headName:'Indra Ginanjar',documents:[],news:[],social:[],institutions:[],pbb:{year:'Belum diisi',target:0,realization:0,note:'Data pencapaian PBB akan diperbarui oleh admin desa.'}};
+function getData(){try{return {...defaults,...JSON.parse(localStorage.getItem('cikondangSiteData')||'{}')}}catch(e){return defaults}}
+function safe(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){const d=getData();['introText','aboutTitle','aboutText','headName'].forEach(k=>{const el=document.getElementById(k);if(el)el.textContent=d[k]||defaults[k]});
+const cards=(items,empty,kind)=>items&&items.length?items.map(x=>`<article class="empty-card"><b>${safe(x.title||x.name)}</b><p>${safe(x.description||'')}</p>${x.url?`<a href="${safe(x.url)}" target="_blank" rel="noopener">Buka / Unduh →</a>`:''}</article>`).join(''):`<article class="empty-card">${empty}</article>`;
+document.getElementById('documentList').innerHTML=cards(d.documents,'Dokumen desa akan ditampilkan di sini.');
+document.getElementById('newsList').innerHTML=cards(d.news,'Berita dan kegiatan desa akan ditampilkan di sini.');
+document.getElementById('socialList').innerHTML=cards(d.social,'Tautan sosial media akan ditampilkan di sini.');
+document.getElementById('institutionList').innerHTML=cards(d.institutions,'Data kelembagaan akan ditampilkan di sini.');
+const p=d.pbb||defaults.pbb,fmt=n=>'Rp '+Number(n||0).toLocaleString('id-ID');document.getElementById('pbbYear').textContent=p.year||'Belum diisi';document.getElementById('pbbTarget').textContent=p.target?fmt(p.target):'—';document.getElementById('pbbRealization').textContent=p.realization?fmt(p.realization):'—';let pct=p.target?Math.min(100,Number(p.realization||0)/Number(p.target)*100):0;document.getElementById('pbbPercent').textContent=p.target?pct.toFixed(1)+'%':'—';document.getElementById('pbbBar').style.width=pct+'%';document.getElementById('pbbNote').textContent=p.note||''}
+render();
